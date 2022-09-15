@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+</head>
+<body>
+    <div id="myMap" style="position:relative;width:100%;height:100%;"></div>
+</body>
+
+<script type='text/javascript' src='http://www.bing.com/api/maps/mapcontrol?callback=mapReady&key=[YOUR_BING_MAPS_KEY]' async defer></script>
+<script>
+var userPin, watchId, userLoc;
+
+function mapReady() {        
+    var _bingMap = new Microsoft.Maps.Map('#myMap');
+    console.log("window.Microsoft.Maps: ", window.Microsoft.Maps);
+
+    navigator.geolocation.getCurrentPosition(function (position) {
+        var loc = new Microsoft.Maps.Location(
+            position.coords.latitude,
+            position.coords.longitude);
+        _bingMap.setView({ center: loc, zoom: 17 });
+    });       
+    StartTracking(_bingMap);        
+}   
+function StartTracking(map) {
+    userPin = new Microsoft.Maps.Pushpin(map.getCenter(), {
+        visible: false,
+        color: 'green',
+        title: 'Your position'
+    });
+    map.entities.push(userPin);
+
+    watchId = navigator.geolocation.watchPosition(UsersLocationUpdated);
+}
+
+function UsersLocationUpdated(position) {
+    var loc = new Microsoft.Maps.Location(
+        position.coords.latitude,
+        position.coords.longitude);
+
+    userPin.setLocation(loc);
+    userPin.setOptions({ visible: true });
+    _bingMap.setView({ center: loc, zoom: 17 });
+
+}    
+</script>
+</html>
